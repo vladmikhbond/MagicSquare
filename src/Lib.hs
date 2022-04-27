@@ -1,21 +1,17 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use head" #-}
 
-module Lib ( perm, magic3, magic4, someFunc) where
+module Lib ( perms, magic3, magic4) where
 
 import Data.List ( (\\) )
 import Control.Monad (when)
+import Text.ParserCombinators.ReadP (many1)
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
-
-
-
-perm xs 1 = map (:[]) xs
-perm xs n = do 
+perms xs 1 = map (:[]) xs
+perms xs n = do 
    x <- xs
    let xs' = xs \\ [x]
-   rest <- perm xs' (n-1)
+   rest <- perms xs' (n-1)
    return (x : rest)
 
 magic3 = let 
@@ -24,12 +20,12 @@ magic3 = let
    nSum = (n^2 + 1) * n `div` 2
 
    stack = do
-      ys <- filter (\p -> nSum == sum p) (perm xs n)
-      let xs1 = xs \\ ys
-      ys1 <- filter (\p -> nSum == sum p) (perm xs1 n)
-      let xs2 = xs1 \\ ys1
-      ys2 <- filter (\p -> nSum == sum p) (perm xs2 n)
-      return [ys, ys1, ys2]
+      ys1 <- filter (\p -> nSum == sum p) (perms xs n)
+      let ns2 = xs \\ ys1
+      ys2 <- filter (\p -> nSum == sum p) (perms ns2 n)
+      let ns3 = ns2 \\ ys2
+      ys3 <- filter (\p -> nSum == sum p) (perms ns3 n)
+      return [ys1, ys2, ys3]
 
    ok m = sum (map (!!0) m) == nSum && 
           sum (map (!!1) m) == nSum && 
@@ -42,18 +38,19 @@ magic3 = let
 
 magic4 = let 
    n = 4
-   xs = [1..n^2]
+   ns1 = [1..n^2]
    nSum = (n^2 + 1) * n `div` 2
 
    stack = do
-      ys <- filter (\p -> nSum == sum p) (perm xs n)
-      let xs1 = xs \\ ys
-      ys1 <- filter (\p -> nSum == sum p) (perm xs1 n)
-      let xs2 = xs1 \\ ys1
-      ys2 <- filter (\p -> nSum == sum p) (perm xs2 n)
-      let xs3 = xs2 \\ ys2
-      ys3 <- filter (\p -> nSum == sum p) (perm xs3 n)
-      return [ys, ys1, ys2, ys3]
+      ys1 <- filter (\p -> nSum == sum p) (perms ns1 n)
+      let ns2 = ns1 \\ ys1
+      ys2 <- filter (\p -> nSum == sum p) (perms ns2 n)
+      let ns3 = ns2 \\ ys2
+      ys3 <- filter (\p -> nSum == sum p) (perms ns3 n)
+      let ns4 = ns3 \\ ys3
+      ys4 <- perms ns4 n
+
+      return [ys1, ys2, ys3, ys4]
 
    ok m = sum (map (!!0) m) == nSum && 
           sum (map (!!1) m) == nSum && 
