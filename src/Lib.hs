@@ -6,37 +6,37 @@
 -- ("g","vcm")
 -- ("gm", "vc")
 -- ("", "vgcm")
--- "vgcm","vc","mvc","c","mgc","g","mg"
--- "vgcm","vc","mvc","v","mgv","g","mg"
--- "vgcm","vc","mvc","v","mcv","c","mgc","g","mg"
 
--- состояние - множ персонажей на левом берегу (множ на правом = разность)
--- переходы: если М присутствует, можно удалить одно m или m с любой др буквой
---           иначе добавить одно m или m с любой недостающей буквой  
--- отсечения - наличие подмн "vg", или "cg", при отсутствии m
 import Data.List ( (\\), sort)
 
-type State = [Char]  -- v g c m
-type Hist  = [State]  -- v g c m
+-- состояние - упоряд. множ. объектов, включая лодку, на левом берегу (множ на правом = разность)
+type State = [Char]  
+type Hist  = [State] 
 
+boat : goods = "_cgv"
+invalidStates = map sort ["gv", "cg", "cgv", "_c", "_v", "_"]
+
+-- переходы: если лодка на лев берегу, удалить пустую лодку или лодку с любым объектом
+--           иначе добавить пустую лодку или лодку с любым объектом с правого берега
 nextStates :: State -> [State]
-nextStates st = let
-   st' = st \\ ['m']
-   right = "vgc" \\ st
+nextStates state = let
+   thisBank = state \\ [boat]
+   otherBank = goods \\ state
+   states = if boat `elem` state
+    then thisBank : [ thisBank \\ [x] | x <- thisBank]
+    else (boat : state) : [boat : x : state | x <- otherBank]
  in 
-   if 'm' `elem` st
-    then st' : [ st' \\ [x] | x <- st']
-    else ('m' : st) : ['m' : x : st | x <- right]
+   map sort states
 
 isValid :: State -> Bool
-isValid state = sort state `notElem` ["gv", "cg", "cgv", "cm", "mv", "m"]
+isValid state = state `notElem` invalidStates
 
-solv :: Hist -> [Hist]
-solv hist = do 
+variants :: Hist -> [Hist]
+variants hist = do 
    let nexts = filter isValid (nextStates $ head hist) 
    next <- filter (`notElem` hist) nexts 
-   if next == "" 
+   if null next 
      then return $ reverse hist   
-     else solv (next : hist)
+     else variants (next : hist)
       
-   
+solve = variants [boat : "cgv"]
