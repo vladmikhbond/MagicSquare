@@ -6,10 +6,10 @@
 -- ("g","vcm")
 -- ("gm", "vc")
 -- ("", "vgcm")
---
--- "","mg","g","mgc","c","mvc","vc","vgcm"]
--- ["","mc","c","mvc","vc","vgcm"]
--- ["","mc","c","mcv","cv","v","mvc","vc","vgcm"]
+-- "vgcm","vc","mvc","c","mgc","g","mg"
+-- "vgcm","vc","mvc","v","mgv","g","mg"
+-- "vgcm","vc","mvc","v","mcv","c","mgc","g","mg"
+
 -- состояние - множ персонажей на левом берегу (множ на правом = разность)
 -- переходы: если М присутствует, можно удалить одно m или m с любой др буквой
 --           иначе добавить одно m или m с любой недостающей буквой  
@@ -31,14 +31,12 @@ nextStates st = let
 isValid :: State -> Bool
 isValid state = sort state `notElem` ["gv", "cg", "cgv", "cm", "mv", "m"]
 
-solv :: [Hist] -> [Hist]
-solv hists = do 
-   hist <- hists   
-   let nexts = filter isValid (nextStates $ head hist)  --   ["vgcm"] <- [["vgcm"]]
-   next <- filter (`notElem` hist) nexts   --    "vc"    <-   ["vc"]
-
+solv :: Hist -> [Hist]
+solv hist = do 
+   let nexts = filter isValid (nextStates $ head hist) 
+   next <- filter (`notElem` hist) nexts 
    if next == "" 
-     then [hist]   
-     else  solv [next : hist]
+     then return $ reverse hist   
+     else solv (next : hist)
       
    
