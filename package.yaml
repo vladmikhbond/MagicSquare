@@ -28,13 +28,14 @@ library:
   source-dirs: src
 
 executables:
-  MagicSquare-exe:
+  M:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -O2
     dependencies:
     - MagicSquare
 
