@@ -32,7 +32,6 @@ library
       src
   build-depends:
       base >=4.7 && <5
-    , list-t
     , time
   default-language: Haskell2010
 
@@ -46,7 +45,6 @@ executable M
   build-depends:
       MagicSquare
     , base >=4.7 && <5
-    , list-t
     , time
   default-language: Haskell2010
 
@@ -61,6 +59,5 @@ test-suite MagicSquare-test
   build-depends:
       MagicSquare
     , base >=4.7 && <5
-    , list-t
     , time
   default-language: Haskell2010
